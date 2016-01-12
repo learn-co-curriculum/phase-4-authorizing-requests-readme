@@ -12,18 +12,22 @@ Sometimes you want to require that a user is logged in to access a route. Here's
 
 Let's say we have a `DocumentsController`. Its `show` method looks like this:
 
-   def show
-     @document = Document.find(params[:id])
-   end
+```ruby
+  def show
+    @document = Document.find(params[:id])
+  end
+```
 
 Now let's add a new requirement: documents should only be shown to users when they're logged in. Logged in users have `:user_id` set on their `session`.
 
 The first thing you might do is to just add some code into `DocumentsController#show`:
 
+```ruby
   def show
     return head(:forbidden) unless session.include? :user_id
     @document = Document.find(params[:id])
   end
+```
 
 We're using the phrase `unless session.include?` rather than `unless session[:user_id]`, because a user_id of 0 is still a valid user id, but would evaluate falsey, and reject the request.
 
@@ -31,6 +35,7 @@ We're using the phrase `unless session.include?` rather than `unless session[:us
 
 This code works fine, so you use it in a few places. Now your DocumentsController looks like this:
 
+```ruby
   class DocumentsController < ApplicationController
     def show
       return head(:forbidden) unless session.include? :user_id
@@ -52,11 +57,13 @@ This code works fine, so you use it in a few places. Now your DocumentsControlle
       # code to update a document
     end    
   end
+```
 
 That doesn't look so DRY. I really wish there were a way to ask Rails to run a check before any controller action.
 
 Fortunately, Rails gives us a solution: [`before_action`][filters]. We can refactor our code like so:
 
+```ruby
   class DocumentsController < ApplicationController
     before_action :require_login
     
@@ -77,10 +84,13 @@ Fortunately, Rails gives us a solution: [`before_action`][filters]. We can refac
       return head(:forbidden) unless session.include? :user_id    
     end
   end
+```
 
 Let's look at the code we've added:
 
-    before_action :require_login
+```ruby
+  before_action :require_login
+```
 
 This is a call to the ActionController class method `before_action`. `before_action` registers a [filter]. A filter is a method which runs before, after, or around, a controller's action. In this case, the filter runs before all DocumentsController actions, and kicks requests out with `403 Forbidden` unless they're logged in.
 
@@ -88,16 +98,20 @@ This is a call to the ActionController class method `before_action`. `before_act
 
 What if we wanted to let anyone see a list of documents, but keep the `before_action` filter for other `DocumentsController` methods? We could do this:
 
+```ruby
   class DocumentsController < ApplicationController
     before_action :require_login
     skip_before_action :require_login, only: [:index]
 
     # ...
   end
+```
 
 This class method,
 
-    skip_before_action :require_login, only: [:index]
+```ruby
+  skip_before_action :require_login, only: [:index]
+```
 
 Tells Rails to skip the `require_login` filter only on the `index` action.
 
