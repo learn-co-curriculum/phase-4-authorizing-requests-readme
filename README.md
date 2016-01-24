@@ -25,6 +25,8 @@ The first thing you might do is to just add some code into `DocumentsController#
     @document = Document.find(params[:id])
   end
 
+The first line is a return guard. Unless the session includes `:user_id`, we return an error. `head(:forbidden)` is a controller method that returns the specified HTTP status code—in this case, if a user isn't logged in, we return `403 Forbidden`.
+
 We're using the phrase `unless session.include?` rather than `unless session[:user_id]`, because a user_id of 0 is still a valid user id, but would evaluate falsey, and reject the request.
 
 ## Refactor
