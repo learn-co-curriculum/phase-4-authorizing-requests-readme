@@ -17,7 +17,7 @@ Let's say we have a `DocumentsController`. Its `show` method looks like this:
     @document = Document.find(params[:id])
   end
 ```
-Now let's add a new requirement: documents should only be shown to users when they're logged in. Logged in users have `:user_id` set on their `session`.
+Now let's add a new requirement: documents should only be shown to users when they're logged in. From a technical perspetive, what does it actually mean for a user to log in?  As we saw in the last section, when a user logs in all we are doing is using cookies to add their `:user_id` to their `session`.
 
 The first thing you might do is to just add some code into `DocumentsController#show`:
 
@@ -92,7 +92,7 @@ Let's look at the code we've added:
   before_action :require_login
 ```
 
-This is a call to the ActionController class method `before_action`. `before_action` registers a [filter]. A filter is a method which runs before, after, or around, a controller's action. In this case, the filter runs before all DocumentsController actions, and kicks requests out with `403 Forbidden` unless they're logged in.
+This is a call to the ActionController class method `before_action`. `before_action` registers a filter. A filter is a method which runs before, after, or around, a controller's action. In this case, the filter runs before all DocumentsController's actions, and kicks requests out with `403 Forbidden` unless they're logged in.
 
 ## Skipping filters for certain actions
 
