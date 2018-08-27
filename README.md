@@ -5,8 +5,9 @@
 Sometimes you want to require that a user is logged in to access a route. Here's how.
 
 ## Objectives
-  1. Restrict a route to logged in users.
-  2. Skip a filter for particular controller actions.
+
+1.  Restrict a route to logged in users.
+2.  Skip a filter for particular controller actions.
 
 ## First pass: manual checks
 
@@ -17,7 +18,11 @@ def show
   @document = Document.find(params[:id])
 end
 ```
-Now let's add a new requirement: documents should only be shown to users when they're logged in. From a technical perspective, what does it actually mean for a user to log in?  As we saw in the last section, when a user logs in all we are doing is using cookies to add their `:user_id` to their `session`.
+
+Now let's add a new requirement: documents should only be shown to users when
+they're logged in. From a technical perspective, what does it actually mean for
+a user to _log in_? When a user logs in, all we are doing is using cookies to add
+their `:user_id` to their `session`.
 
 The first thing you might do is to just add some code into `DocumentsController#show`:
 
@@ -28,11 +33,15 @@ def show
 end
 ```
 
-The first line is a return guard. Unless the session includes `:user_id`, we return an error. `head(:forbidden)` is a controller method that returns the specified HTTP status code—in this case, if a user isn't logged in, we return `403 Forbidden`.
+The first line is a return guard. Unless the session includes `:user_id`, we
+return an error. `head(:forbidden)` is a controller method that returns the
+specified HTTP status code—in this case, if a user isn't logged in, we return
+`403 Forbidden`.
 
 ## Refactor
 
-This code works fine, so you use it in a few places. Now your DocumentsController looks like this:
+This code works fine, so you use it in a few places. Now your
+DocumentsController looks like this:
 
 ```ruby
 class DocumentsController < ApplicationController
@@ -54,18 +63,20 @@ class DocumentsController < ApplicationController
     return head(:forbidden) unless session.include? :user_id
     @document = Document.find(params[:id])
     # code to update a document
-  end    
+  end
 end
 ```
 
-That doesn't look so DRY. I really wish there were a way to ask Rails to run a check before any controller action.
+That doesn't look so DRY. I really wish there were a way to ask Rails to run a
+check before any controller action.
 
-Fortunately, Rails gives us a solution: [`before_action`][filters]. We can refactor our code like so:
+Fortunately, Rails gives us a solution: [`before_action`][filters]. We can
+refactor our code like so:
 
 ```ruby
 class DocumentsController < ApplicationController
   before_action :require_login
-  
+
   def show
     @document = Document.find(params[:id])
   end
@@ -80,21 +91,28 @@ class DocumentsController < ApplicationController
   private
 
   def require_login
-    return head(:forbidden) unless session.include? :user_id    
+    return head(:forbidden) unless session.include? :user_id
   end
 end
 ```
 
 Let's look at the code we've added:
+
 ```ruby
 before_action :require_login
 ```
 
-This is a call to the ActionController class method `before_action`. `before_action` registers a filter. A filter is a method which runs before, after, or around, a controller's action. In this case, the filter runs before all DocumentsController's actions, and kicks requests out with `403 Forbidden` unless they're logged in.
+This is a call to the ActionController class method `before_action`.
+`before_action` registers a filter. A filter is a method which runs before,
+after, or around, a controller's action. In this case, the filter runs before
+all DocumentsController's actions, and kicks requests out with `403 Forbidden`
+unless they're logged in.
 
 ## Skipping filters for certain actions
 
-What if we wanted to let anyone see a list of documents, but keep the `before_action` filter for other `DocumentsController` methods? We could do this:
+What if we wanted to let anyone see a list of documents, but keep the
+`before_action` filter for other `DocumentsController` methods? We could do
+this:
 
 ```ruby
 class DocumentsController < ApplicationController
@@ -114,7 +132,8 @@ skip_before_action :require_login, only: [:index]
 Tells Rails to skip the `require_login` filter only on the `index` action.
 
 ## Resources
-  * [Action Controller Overview — 8, Filters][filters]
+
+- [Action Controller Overview — 8, Filters][filters]
 
 [filters]: http://guides.rubyonrails.org/action_controller_overview.html#filters
 
