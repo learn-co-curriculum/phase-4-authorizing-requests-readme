@@ -41,7 +41,7 @@ The first thing you might do is to just add some code into
 
 ```ruby
 def show
-  return json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
+  return render json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
   document = Document.find(params[:id])
   render json: document
 end
@@ -59,25 +59,25 @@ This code works fine, so you use it in a few places. Now your
 ```ruby
 class DocumentsController < ApplicationController
   def show
-    return json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
+    return render json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
     document = Document.find(params[:id])
     render json: document
   end
 
   def index
-    return json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
+    return render json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
     documents = Document.all
     render json: documents
   end
 
   def create
-    return json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
+    return render json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
     document = Document.create(author_id: session[:user_id])
     render json: document, status: :created
   end
 
   def update
-    return json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
+    return render json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
     document = Document.find(params[:id])
     # code to update a document
   end
@@ -112,7 +112,7 @@ class DocumentsController < ApplicationController
   private
 
   def authorize
-    return json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
+    return render json: { error: "Not authorized" }, status: :unauthorized unless session.include? :user_id
   end
 end
 ```
