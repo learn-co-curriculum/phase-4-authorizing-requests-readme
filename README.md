@@ -48,7 +48,7 @@ end
 ```
 
 The first line is a **guard clause**. Unless the session includes `:user_id`, we
-return an error. `status: :unauthorized` will returns the specified HTTP status
+return an error. `status: :unauthorized` will return the specified HTTP status
 code. In this case, if a user isn't logged in, we return `401 Unauthorized`.
 
 ## Refactor
