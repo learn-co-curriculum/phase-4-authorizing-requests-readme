@@ -3,22 +3,22 @@
 ## Learning Goals
 
 - Understand the difference between _authentication_ and _authorization_
-- Restrict access to routes to only authorized users
+- Restrict access to routes to authorized users only
 
 ## Introduction
 
-So far, we've been talking about how to **authenticate** users: we need some way
-to confirm that a user is who they say they are. We've been using their username
-as our means of authentication; in the future, we'll also add a password to our
+So far, we've been talking about how to **authenticate** users, i.e., how to
+confirm that a user is who they say they are. We've been using their username as
+our means of authentication; in the future, we'll also add a password to our
 authentication process.
 
-In addition to **authentication**, one other feature of most applications is the
-concept of **authorization**: giving certain users permission to access specific
-resources. For example, we might want **all** users to be able to browse blog
-posts, but only **authenticated** users to have access to premium features, like
-creating their own blog posts. Here's how we can use the session to authenticate
-users requests, and give them explicit permission to access certain routes in
-our application.
+In addition to **authentication**, most applications also need to implement
+**authorization**: giving certain users permission to access specific resources.
+For example, we might want **all** users to be able to browse blog posts, but
+only **authenticated** users to have access to premium features, like creating
+their own blog posts. In this lesson, we'll learn how we can use the session
+hash to authenticate users' requests, and give them explicit permission to
+access certain routes in our application.
 
 ## First Pass: Manual Checks
 
@@ -34,9 +34,9 @@ end
 Now let's add a new requirement: documents should only be shown to users when
 they're logged in. From a technical perspective, what does it actually mean for
 a user to _log in_? When a user logs in, all we are doing is using cookies to
-add their `:user_id` to their `session`.
+add their `:user_id` to the `session` hash.
 
-The first thing you might do is to just add some code into
+The first thing you might do is to add a **guard clause** as the first line of
 `DocumentsController#show`:
 
 ```ruby
@@ -47,9 +47,9 @@ def show
 end
 ```
 
-The first line is a **guard clause**. Unless the session includes `:user_id`, we
-return an error. `status: :unauthorized` will return the specified HTTP status
-code. In this case, if a user isn't logged in, we return `401 Unauthorized`.
+Unless the session includes `:user_id`, we return an error. `status:
+:unauthorized` will return the specified HTTP status code. In this case, if a
+user isn't logged in, we return `401 Unauthorized`.
 
 ## Refactor
 
@@ -117,7 +117,8 @@ class DocumentsController < ApplicationController
 end
 ```
 
-Let's look at the code we've added:
+We've moved our guard clause into its own method and added the following code at
+the top of our `DocumentsController`:
 
 ```ruby
 before_action :authorize
