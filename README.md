@@ -160,6 +160,15 @@ session hash. We can use a `before_action` filter to run some code that will
 check the `:user_id` in the session and only authorize users to run those
 actions if they are logged in.
 
+## Check For Understanding
+
+Before you move on, make sure you can answer the following questions:
+
+1. What is the difference between authentication and authorization?
+2. What Rails method can we use to add an authorization step before each of the
+   actions in our controller? What Rails method can we use to exclude one or
+   more of the actions from the authorization step?
+
 ## Resources
 
 - [Action Controller Overview: Filters][filters]
